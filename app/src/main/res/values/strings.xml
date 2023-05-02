@@ -45,4 +45,13 @@
     <string name="story_has_been_uploaded">Story has been uploaded</string>
     <string name="ok">OK</string>
     <string name="refresh">Refresh</string>
+    <string name="title_activity_maps" translatable="false">MapsActivity</string>
+    <string name="unable_to_get_permission">Unable to get permission</string>
+    <string name="camera_request_title">would Like to Access the Camera</string>
+    <string name="camera_request_msg">This lets you do things like take and share photos</string>
+    <string name="error" translatable="false">Error</string>
+    <string name="enable_location">Enable location</string>
+    <string name="maps">Maps</string>
+    <string name="timeout">Request Timeout</string>
+    <string name="retry">Retry</string>
 </resources>

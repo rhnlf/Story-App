@@ -46,4 +46,12 @@
     <string name="story_has_been_uploaded">Berhasil mengunggah gambar</string>
     <string name="ok">OK</string>
     <string name="refresh">Perbarui</string>
+    <string name="unable_to_get_permission">Gagal mendapatkan izin</string>
+    <string name="camera_request_title">ingin mengakses kamera</string>
+    <string name="camera_request_msg">Ini memungkinkan Anda melakukan hal-hal seperti mengambil dan berbagi foto</string>
+    <string name="error" translatable="false">Error</string>
+    <string name="enable_location">Aktifkan lokasi</string>
+    <string name="maps">Maps</string>
+    <string name="timeout">Batas Waktu Permintaan</string>
+    <string name="retry">Coba lagi</string>
 </resources>

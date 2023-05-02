@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toStartOf="@id/btn_change_language"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/change_language" />
+        android:text="@string/change_language" />
 
     <Button
         android:id="@+id/btn_change_language"
@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_change_language"
         app:layout_constraintTop_toTopOf="@id/tv_change_language"
-        tools:text="@string/change" />
+        android:text="@string/change" />
 
     <Button
         android:id="@+id/btn_logout"
@@ -40,6 +40,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/log_out" />
+        android:text="@string/log_out" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

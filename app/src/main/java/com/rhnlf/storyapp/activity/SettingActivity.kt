@@ -8,9 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.ViewModelProvider
 import com.rhnlf.storyapp.R
-import com.rhnlf.storyapp.data.local.UserPreference
 import com.rhnlf.storyapp.databinding.ActivitySettingBinding
-import com.rhnlf.storyapp.helper.Helper.Companion.dataStore
 import com.rhnlf.storyapp.view.SettingViewModel
 import com.rhnlf.storyapp.view.ViewModelFactory
 import java.util.Locale
@@ -33,7 +31,7 @@ class SettingActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         viewModel = ViewModelProvider(
-            this, ViewModelFactory(UserPreference.getInstance(dataStore), application)
+            this, ViewModelFactory(application)
         )[SettingViewModel::class.java]
     }
 

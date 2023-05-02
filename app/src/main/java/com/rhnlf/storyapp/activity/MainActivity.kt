@@ -2,6 +2,7 @@ package com.rhnlf.storyapp.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,10 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.rhnlf.storyapp.R
 import com.rhnlf.storyapp.adapter.MainAdapter
-import com.rhnlf.storyapp.data.local.UserPreference
+import com.rhnlf.storyapp.adapter.StateAdapter
 import com.rhnlf.storyapp.data.remote.response.ListStoryItem
 import com.rhnlf.storyapp.databinding.ActivityMainBinding
-import com.rhnlf.storyapp.helper.Helper.Companion.dataStore
 import com.rhnlf.storyapp.view.MainViewModel
 import com.rhnlf.storyapp.view.ViewModelFactory
 import kotlin.system.exitProcess
@@ -26,6 +26,7 @@ import kotlin.system.exitProcess
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
+    private var adapter = MainAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,15 @@ class MainActivity : AppCompatActivity() {
             R.id.action_refresh -> {
                 setupAction()
                 initViewModel()
+                val intent = Intent(this@MainActivity, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+
+            R.id.action_map -> {
+                val intent = Intent(this, MapsActivity::class.java)
+                startActivity(
+                    intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle()
+                )
             }
         }
         return super.onOptionsItemSelected(item)
@@ -71,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(
-            this, ViewModelFactory(UserPreference.getInstance(dataStore), application)
+            this, ViewModelFactory(application)
         )[MainViewModel::class.java]
 
         viewModel.apply {
@@ -95,18 +105,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            listStory.observe(this@MainActivity) { listStory ->
-                setStoryList(listStory)
-            }
-
-            getUser().observe(this@MainActivity) { user ->
-                viewModel.getAllStory("Bearer ${user.token}")
+            story.observe(this@MainActivity) { pagingData ->
+                Log.d(TAG, "Submitting list to adapter  THIS")
+                adapter.submitData(lifecycle, pagingData)
             }
         }
     }
 
-    private fun setStoryList(listStory: List<ListStoryItem>) {
-        val adapter = MainAdapter(listStory)
+    private fun setStoryList() {
+        adapter = MainAdapter()
         adapter.setOnItemClickCallback(object : MainAdapter.OnItemClickCallback {
             override fun onItemClicked(data: ListStoryItem) {
                 val intent = Intent(this@MainActivity, DetailActivity::class.java)
@@ -117,10 +124,13 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         })
-        binding.rvStoryList.adapter = adapter
+        binding.rvStoryList.adapter =
+            adapter.withLoadStateFooter(footer = StateAdapter { adapter.retry() })
     }
 
     private fun setupAction() {
+        setStoryList()
+
         val layoutManager = LinearLayoutManager(this)
         binding.apply {
             rvStoryList.layoutManager = layoutManager
@@ -142,5 +152,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_STORY = "story"
+        private const val TAG = "ListStoryActivity"
     }
 }

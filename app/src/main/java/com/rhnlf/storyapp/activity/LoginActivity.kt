@@ -6,17 +6,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import com.rhnlf.storyapp.R
-import com.rhnlf.storyapp.data.local.UserPreference
+import com.rhnlf.storyapp.data.local.User
 import com.rhnlf.storyapp.databinding.ActivityLoginBinding
-import com.rhnlf.storyapp.helper.Helper.Companion.dataStore
 import com.rhnlf.storyapp.helper.Helper.Companion.isValidEmail
 import com.rhnlf.storyapp.helper.Helper.Companion.isValidPassword
+import com.rhnlf.storyapp.helper.ScreenState
 import com.rhnlf.storyapp.view.LoginViewModel
 import com.rhnlf.storyapp.view.ViewModelFactory
 
@@ -32,41 +31,20 @@ class LoginActivity : AppCompatActivity() {
         initViewModel()
         setupAction()
         setButton()
-        playAnimation()
 
         supportActionBar?.hide()
     }
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(
-            this, ViewModelFactory(UserPreference.getInstance(dataStore), application)
+            this, ViewModelFactory(application)
         )[LoginViewModel::class.java]
 
         viewModel.apply {
-            snackBarText.observe(this@LoginActivity) {
-                it.getContentIfNotHandled()?.let { snackBarText ->
-                    Snackbar.make(window.decorView.rootView, snackBarText, Snackbar.LENGTH_SHORT)
-                        .setBackgroundTint(
-                            ContextCompat.getColor(
-                                this@LoginActivity, R.color.red_light
-                            )
-                        ).setTextColor(ContextCompat.getColor(this@LoginActivity, R.color.black))
-                        .show()
-                }
-            }
-
-            isLoading.observe(this@LoginActivity) { isLoading ->
-                showLoading(isLoading)
-            }
-
-            loginError.observe(this@LoginActivity) { loginError ->
-                showLoginInvalid(loginError)
-
-                if (!loginError) {
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    finish()
+            isAnimate.observe(this@LoginActivity) {
+                if (it.hasBeenHandled) showView()
+                it.getContentIfNotHandled()?.let {
+                    playAnimation()
                 }
             }
         }
@@ -113,6 +91,11 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 override fun afterTextChanged(s: Editable?) {
+                    val errorText = if (!edLoginPassword.text.toString()
+                            .isValidPassword()
+                    ) getString(R.string.minimum_8_characters)
+                    else null
+                    edLoginPassword.setError(errorText, null)
                 }
             })
 
@@ -120,7 +103,36 @@ class LoginActivity : AppCompatActivity() {
                 binding.let {
                     val email = it.edLoginEmail.text.toString()
                     val password = it.edLoginPassword.text.toString()
-                    viewModel.login(email, password)
+                    viewModel.login(email, password).observe(this@LoginActivity) { state ->
+                        when (state) {
+                            is ScreenState.Loading -> {
+                                showLoading(true)
+                                showLoginInvalid(false)
+                            }
+
+                            is ScreenState.Success -> {
+                                showLoading(false)
+                                val name = state.data?.loginResult?.name as String
+                                val token = state.data.loginResult.token as String
+                                viewModel.saveUser(User(name, email, token))
+                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                finish()
+                            }
+
+                            is ScreenState.Error -> {
+                                showLoading(false)
+                                val error = state.message as String
+                                Log.e(TAG, "onError: $error")
+                                if (error.contains("401")) showLoginInvalid(true)
+                                else showLoginInvalid(true, error)
+                            }
+
+                            else -> {}
+                        }
+                    }
                 }
             }
 
@@ -152,11 +164,31 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun showView() {
+        binding.apply {
+            tvTitle.alpha = 1f
+            tvEmail.alpha = 1f
+            tilEmail.alpha = 1f
+            tvPassword.alpha = 1f
+            tilPassword.alpha = 1f
+            btnLogin.alpha = 1f
+            divider.alpha = 1f
+            tvDoNotHaveAccount.alpha = 1f
+            btnRegister.alpha = 1f
+        }
+    }
+
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
-    private fun showLoginInvalid(isError: Boolean) {
+    private fun showLoginInvalid(isError: Boolean, msg: String? = null) {
+        val errorMessage = msg ?: getString(R.string.wrong_account)
+        binding.tvError.text = errorMessage
         binding.cvLoginInvalid.visibility = if (isError) View.VISIBLE else View.GONE
+    }
+
+    companion object {
+        private const val TAG = "LoginActivity"
     }
 }

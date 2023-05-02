@@ -25,7 +25,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/login" />
+            android:text="@string/login" />
 
         <TextView
             android:id="@+id/tv_email"
@@ -37,7 +37,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
-            tools:text="@string/email" />
+            android:text="@string/email" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_email"
@@ -68,7 +68,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_email"
-            tools:text="@string/password" />
+            android:text="@string/password" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_password"
@@ -110,7 +110,7 @@
                 android:padding="8dp"
                 android:textColor="@color/design_default_color_error"
                 android:textSize="16sp"
-                tools:text="@string/wrong_account" />
+                android:text="@string/wrong_account" />
 
         </androidx.cardview.widget.CardView>
 
@@ -125,7 +125,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cv_login_invalid"
-            tools:text="@string/login" />
+            android:text="@string/login" />
 
 
         <com.google.android.material.divider.MaterialDivider
@@ -149,7 +149,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider"
-            tools:text="@string/don_t_have_an_account" />
+            android:text="@string/don_t_have_an_account" />
 
         <Button
             android:id="@+id/btn_register"
@@ -161,7 +161,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_do_not_have_account"
-            tools:text="@string/register" />
+            android:text="@string/register" />
 
         <ProgressBar
             android:id="@+id/progressBar"

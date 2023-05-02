@@ -13,9 +13,7 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.rhnlf.storyapp.data.local.UserPreference
 import com.rhnlf.storyapp.databinding.ActivitySplashBinding
-import com.rhnlf.storyapp.helper.Helper.Companion.dataStore
 import com.rhnlf.storyapp.view.SplashViewModel
 import com.rhnlf.storyapp.view.ViewModelFactory
 
@@ -37,12 +35,12 @@ class SplashActivity : AppCompatActivity() {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(
-            this, ViewModelFactory(UserPreference.getInstance(dataStore), application)
+            this, ViewModelFactory(application)
         )[SplashViewModel::class.java]
 
         viewModel.apply {
             getUser().observe(this@SplashActivity) { user ->
-                this@SplashActivity.isLogin = user.token.isNotEmpty()
+                isLogin = user.token.isNotEmpty()
             }
         }
     }
